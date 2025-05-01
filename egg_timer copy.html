@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Egg Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background: #fdf6e3;
+    }
+    h1 {
+      font-size: 2em;
+      color: #555;
+    }
+    #timer {
+      font-size: 3em;
+      margin: 20px 0;
+      color: #ed9b7d;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background-color: #29e254;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #c08fe8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Egg Boiling Timer</h1>
+  <div id="timer">10:00</div>
+  <button onclick="startTimer()">Start Timer</button>
+  <div id="message"></div>
+
+  <!-- Audio file -->
+<audio id="alarmSound" src="alarm.wav" preload="auto"></audio>
+
+
+  <script>
+    let countdown;
+
+    function startTimer() {
+      clearInterval(countdown); // Reset any existing timer
+
+      let duration = 10 * 60; // 1 minutes in seconds
+      const timerDisplay = document.getElementById("timer");
+      const message = document.getElementById("message");
+      const alarmSound = document.getElementById("alarmSound");
+      message.textContent = ""; // Clear previous message
+
+      // Ask permission for notifications
+      if ("Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+
+      countdown = setInterval(() => {
+        let minutes = Math.floor(duration / 60);
+        let seconds = duration % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (duration <= 0) {
+          clearInterval(countdown);
+          alarmSound.play();
+          message.textContent = "🥚 Egg is ready!";
+          
+          // Show notification if permitted
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("Egg Timer", {
+              body: "🥚 Your egg is ready!",
+              icon: "https://upload.wikimedia.org/wikipedia/commons/8/88/Boiled_egg.png"
+            });
+          }
+        }
+
+        duration--;
+      }, 1000);
+    }
+  </script>
+
+</body>
+</html>
+
